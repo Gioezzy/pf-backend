@@ -34,11 +34,9 @@ export enum ChampionTitle {
 @Entity({ name: 'competition_registrations' })
 @Index('uq_registration_competition_user', ['competitionId', 'userId'], {
   unique: true,
-  where: '"userId" IS NOT NULL',
 })
 @Index('uq_registration_competition_team', ['competitionId', 'teamId'], {
   unique: true,
-  where: '"teamId" IS NOT NULL',
 })
 export class CompetitionRegistrationEntity {
   @PrimaryGeneratedColumn('uuid')
