@@ -145,6 +145,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
+      domain: process.env.NODE_ENV === 'production' ? '.physicsfest.my.id' : undefined,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Hari
     });
 
@@ -213,6 +214,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
+      domain: process.env.NODE_ENV === 'production' ? '.physicsfest.my.id' : undefined,
       maxAge: 0, // maxAge 0 akan menghancurkan cookie
     });
 

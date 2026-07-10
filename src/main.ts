@@ -114,12 +114,13 @@ async function bootstrap(): Promise<void> {
     getSecret: () =>
       configService.get<string>('CSRF_SECRET') ??
       'default_secret_fallback_value',
-    cookieName: isProd ? '__Host-psifest.x-csrf-token' : 'x-csrf-token',
+    cookieName: 'x-csrf-token',
     cookieOptions: {
       httpOnly: true,
       sameSite: 'lax',
       secure: isProd,
       path: '/',
+      domain: isProd ? '.physicsfest.my.id' : undefined,
     },
     getCsrfTokenFromRequest: (req: Request) => {
       const token = req.headers['x-csrf-token'];
