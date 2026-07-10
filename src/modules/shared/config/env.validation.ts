@@ -39,7 +39,7 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
-  ALLOWED_ORIGINS?: string;
+  CORS_ORIGINS?: string;
 
   // ── Database (MySQL) ─────────────────────────────────────────
   @IsString()
@@ -162,12 +162,12 @@ export function validate(
 
   if (
     validatedConfig.NODE_ENV === Environment.Production &&
-    (!validatedConfig.ALLOWED_ORIGINS ||
-      validatedConfig.ALLOWED_ORIGINS.trim().length === 0)
+    (!validatedConfig.CORS_ORIGINS ||
+      validatedConfig.CORS_ORIGINS.trim().length === 0)
   ) {
     throw new Error(
       '❌ Environment validation failed:\n' +
-        'ALLOWED_ORIGINS wajib diisi saat NODE_ENV=production.',
+        'CORS_ORIGINS wajib diisi saat NODE_ENV=production.',
     );
   }
 

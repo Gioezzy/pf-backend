@@ -44,10 +44,8 @@ async function bootstrap(): Promise<void> {
   const nodeEnv = configService.get<string>('NODE_ENV', 'development');
   const isProd = nodeEnv === 'production';
 
-  // 0. Validasi secret
   const requiredSecrets = [
-    'JWT_ACCESS_SECRET',
-    'JWT_REFRESH_SECRET',
+    'JWT_SECRET',
     'COOKIE_SECRET',
     'CSRF_SECRET',
   ];
