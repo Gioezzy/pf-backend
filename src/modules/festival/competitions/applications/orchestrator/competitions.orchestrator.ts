@@ -5,6 +5,7 @@ import { CreateCompetitionUseCase } from '../use-cases/create-competition.use-ca
 import { UpdateCompetitionUseCase } from '../use-cases/update-competition.use-case';
 import { SoftDeleteCompetitionUseCase } from '../use-cases/soft-delete-competition.use-case';
 import { UpdateWaveUseCase } from '../use-cases/update-wave.use-case';
+import { ImportCompetitionsUseCase } from '../use-cases/import-competitions.use-case';
 import {
   CompetitionResponseDto,
   CompetitionWaveDto,
@@ -22,6 +23,7 @@ export class CompetitionsOrchestrator {
     private readonly updateUseCase: UpdateCompetitionUseCase,
     private readonly softDeleteUseCase: SoftDeleteCompetitionUseCase,
     private readonly updateWaveUseCase: UpdateWaveUseCase,
+    private readonly importUseCase: ImportCompetitionsUseCase,
   ) {}
 
   async getAll(
@@ -51,5 +53,9 @@ export class CompetitionsOrchestrator {
     dto: UpdateWaveDto,
   ): Promise<CompetitionWaveDto> {
     return this.updateWaveUseCase.execute(id, dto);
+  }
+
+  async importCompetitions(data: any[]): Promise<{ imported: number; skipped: number }> {
+    return this.importUseCase.execute(data);
   }
 }

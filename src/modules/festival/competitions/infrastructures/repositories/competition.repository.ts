@@ -32,6 +32,12 @@ export class CompetitionRepository implements ICompetitionRepository {
     });
   }
 
+  async findByName(name: string): Promise<CompetitionEntity | null> {
+    return this.ormRepo.findOne({
+      where: { name },
+    });
+  }
+
   async save(competition: CompetitionEntity): Promise<CompetitionEntity> {
     return this.ormRepo.save(competition);
   }

@@ -123,6 +123,21 @@ export class CompetitionsController {
     return result;
   }
 
+  @Post('import')
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({
+    summary: '(ADMIN) Import array JSON data perlombaan',
+  })
+  async importCompetitions(
+    @Body() data: any[],
+  ): Promise<{ imported: number; skipped: number }> {
+    const result = await this.orchestrator.importCompetitions(data);
+    if (result.imported > 0) {
+      await this.invalidateCache();
+    }
+    return result;
+  }
+
   @Patch(':id')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: '(ADMIN) Memperbarui data perlombaan' })

@@ -23,6 +23,7 @@ import { CreateCompetitionUseCase } from './applications/use-cases/create-compet
 import { UpdateCompetitionUseCase } from './applications/use-cases/update-competition.use-case';
 import { SoftDeleteCompetitionUseCase } from './applications/use-cases/soft-delete-competition.use-case';
 import { UpdateWaveUseCase } from './applications/use-cases/update-wave.use-case'; // IMPORT USE CASE BARU
+import { ImportCompetitionsUseCase } from './applications/use-cases/import-competitions.use-case';
 
 // Orchestrator & Controller
 import { CompetitionsOrchestrator } from './applications/orchestrator/competitions.orchestrator';
@@ -55,6 +56,7 @@ import { CompetitionsController } from './interface/http/competitions.controller
     SoftDeleteCompetitionUseCase,
     UpdateCompetitionUseCase,
     UpdateWaveUseCase, // TAMBAHKAN INI
+    ImportCompetitionsUseCase,
 
     // Orchestrators
     CompetitionsOrchestrator,
