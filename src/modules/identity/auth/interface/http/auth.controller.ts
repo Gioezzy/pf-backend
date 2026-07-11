@@ -145,7 +145,10 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       path: '/',
-      domain: process.env.NODE_ENV === 'production' ? '.physicsfest.my.id' : undefined,
+      domain:
+        process.env.NODE_ENV === 'production'
+          ? '.physicsfest.my.id'
+          : undefined,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Hari
     });
 
@@ -214,7 +217,10 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       path: '/',
-      domain: process.env.NODE_ENV === 'production' ? '.physicsfest.my.id' : undefined,
+      domain:
+        process.env.NODE_ENV === 'production'
+          ? '.physicsfest.my.id'
+          : undefined,
       maxAge: 0, // maxAge 0 akan menghancurkan cookie
     });
 
@@ -224,7 +230,7 @@ export class AuthController {
   @Public()
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
-  @SkipThrottle()
+  @Throttle({ strict: { limit: 5, ttl: 60_000 } }) // 🚨 FIX: Mencegah Brute-Force OTP
   @ApiOperation({
     summary: 'Verifikasi email pengguna',
     description:
