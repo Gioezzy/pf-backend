@@ -55,7 +55,9 @@ export class CompetitionsOrchestrator {
     return this.updateWaveUseCase.execute(id, dto);
   }
 
-  async importCompetitions(data: any[]): Promise<{ imported: number; skipped: number }> {
+  async importCompetitions(
+    data: CreateCompetitionDto[],
+  ): Promise<{ imported: number; skipped: number }> {
     return this.importUseCase.execute(data);
   }
 }

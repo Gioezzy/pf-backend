@@ -63,6 +63,14 @@ export class CreateCompetitionDto {
   @IsBoolean()
   requiresSubmission?: boolean;
 
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Apakah lomba aktif?',
+  })
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+
   @ApiPropertyOptional({ type: [CreateCompetitionWaveDto] })
   @IsOptional()
   @ValidateNested({ each: true })

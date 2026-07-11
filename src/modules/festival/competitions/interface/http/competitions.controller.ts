@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   ParseUUIDPipe,
+  ParseArrayPipe,
   UseInterceptors,
   UseGuards,
   Inject,
@@ -129,7 +130,8 @@ export class CompetitionsController {
     summary: '(ADMIN) Import array JSON data perlombaan',
   })
   async importCompetitions(
-    @Body() data: any[],
+    @Body(new ParseArrayPipe({ items: CreateCompetitionDto }))
+    data: CreateCompetitionDto[],
   ): Promise<{ imported: number; skipped: number }> {
     const result = await this.orchestrator.importCompetitions(data);
     if (result.imported > 0) {

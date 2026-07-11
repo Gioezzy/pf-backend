@@ -3,8 +3,15 @@ import {
   COMPETITION_REPOSITORY_TOKEN,
   type ICompetitionRepository,
 } from '../../infrastructures/repositories/competition.repository.interface';
-import { CompetitionEntity, CompetitionParticipantType } from '../../domains/entities/competition.entity';
+import {
+  CompetitionEntity,
+  CompetitionParticipantType,
+} from '../../domains/entities/competition.entity';
 import { CompetitionWaveEntity } from '../../domains/entities/competition-wave.entity';
+import {
+  CreateCompetitionDto,
+  CreateCompetitionWaveDto,
+} from '../dto/create-competition.dto';
 
 @Injectable()
 export class ImportCompetitionsUseCase {
@@ -13,7 +20,9 @@ export class ImportCompetitionsUseCase {
     private readonly repo: ICompetitionRepository,
   ) {}
 
-  async execute(data: any[]): Promise<{ imported: number; skipped: number }> {
+  async execute(
+    data: CreateCompetitionDto[],
+  ): Promise<{ imported: number; skipped: number }> {
     let imported = 0;
     let skipped = 0;
 
@@ -28,16 +37,17 @@ export class ImportCompetitionsUseCase {
 
       const entity = new CompetitionEntity();
       entity.name = item.name;
-      entity.participantType = item.participantType as CompetitionParticipantType ?? CompetitionParticipantType.INDIVIDUAL;
+      entity.participantType =
+        item.participantType ?? CompetitionParticipantType.INDIVIDUAL;
       entity.minTeamMembers = Number(item.minTeamMembers) || 1;
       entity.maxTeamMembers = Number(item.maxTeamMembers) || 1;
       entity.description = item.description ?? null;
-      entity.requiresSubmission = item.requiresSubmission == 1 || item.requiresSubmission === true;
-      entity.isActive = item.isActive == 1 || item.isActive === true;
+      entity.requiresSubmission = item.requiresSubmission === true;
+      entity.isActive = item.isActive === true;
       entity.whatsappGroupUrl = item.whatsappGroupUrl ?? null;
 
       if (item.waves && Array.isArray(item.waves)) {
-        entity.waves = item.waves.map((w: any) => {
+        entity.waves = item.waves.map((w: CreateCompetitionWaveDto) => {
           const wave = new CompetitionWaveEntity();
           wave.name = w.name;
           wave.price = Number(w.price) || 0;
