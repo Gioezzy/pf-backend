@@ -11,10 +11,7 @@ import {
   UploadApiResponse,
 } from 'cloudinary';
 import { RawUploadedFile } from '../../domains/entities/stored-file.entity';
-import {
-  IStorageAdapter,
-  UploadResult,
-} from './storage.adapter.interface';
+import { IStorageAdapter, UploadResult } from './storage.adapter.interface';
 
 @Injectable()
 export class CloudinaryStorageAdapter implements IStorageAdapter {
@@ -29,10 +26,7 @@ export class CloudinaryStorageAdapter implements IStorageAdapter {
     this.logger.log('[Cloudinary] Adapter diinisialisasi.');
   }
 
-  async upload(
-    file: RawUploadedFile,
-    fileKey: string,
-  ): Promise<UploadResult> {
+  async upload(file: RawUploadedFile, fileKey: string): Promise<UploadResult> {
     return new Promise<UploadResult>((resolve, reject) => {
       // fileKey biasanya berisi path: 'context/userId/uuid.ext'
       // Untuk Cloudinary, folder dan public_id bisa dipisah
@@ -52,9 +46,7 @@ export class CloudinaryStorageAdapter implements IStorageAdapter {
           result: UploadApiResponse | undefined,
         ) => {
           if (error) {
-            this.logger.error(
-              `[Cloudinary] Upload failed → ${error.message}`,
-            );
+            this.logger.error(`[Cloudinary] Upload failed → ${error.message}`);
             return reject(
               new InternalServerErrorException(
                 `Gagal mengupload file ke Cloudinary: ${error.message}`,
@@ -70,9 +62,7 @@ export class CloudinaryStorageAdapter implements IStorageAdapter {
             );
           }
 
-          this.logger.log(
-            `[Cloudinary] File uploaded → ${result.secure_url}`,
-          );
+          this.logger.log(`[Cloudinary] File uploaded → ${result.secure_url}`);
 
           // Masukkan data hasil upload ke dalam objek UploadResult
           // provider kita set ke 'cloudinary' (akan ditambahkan ke type StorageProvider)
@@ -98,19 +88,18 @@ export class CloudinaryStorageAdapter implements IStorageAdapter {
       // fileKey di Cloudinary menyimpan public_id lengkap dengan foldernya
       // Karena resource_type 'auto' saat upload, file non-gambar (seperti pdf) disimpan sebagai type 'raw' atau 'image'
       // Kita coba menghapus dengan tipe 'image' terlebih dahulu.
-      const result: { result: string } = await cloudinary.uploader.destroy(
+      const result = (await cloudinary.uploader.destroy(
         fileKey,
-      );
+      )) as unknown as { result: string };
       this.logger.log(
         `[Cloudinary] Hapus file ${fileKey} → status: ${result.result}`,
       );
 
       // Jika tidak berhasil/tidak ditemukan, coba hapus dengan resource_type 'raw'
       if (result.result === 'not_found') {
-        const rawResult: { result: string } =
-          await cloudinary.uploader.destroy(fileKey, {
-            resource_type: 'raw',
-          });
+        const rawResult = (await cloudinary.uploader.destroy(fileKey, {
+          resource_type: 'raw',
+        })) as unknown as { result: string };
         this.logger.log(
           `[Cloudinary] Hapus raw file ${fileKey} → status: ${rawResult.result}`,
         );

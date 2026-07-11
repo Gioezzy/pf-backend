@@ -36,7 +36,8 @@ export class RegistrationResponseDto {
   @ApiPropertyOptional() participantPhone: string | null = null;
 
   @ApiPropertyOptional() institution?: string | null = null;
-  @ApiPropertyOptional({ type: [TeamMemberDto] }) members?: TeamMemberDto[] = [];
+  @ApiPropertyOptional({ type: [TeamMemberDto] }) members?: TeamMemberDto[] =
+    [];
 
   @ApiProperty({ enum: RegistrationStatus })
   status: RegistrationStatus = RegistrationStatus.PENDING_PAYMENT;

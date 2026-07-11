@@ -24,20 +24,27 @@ export class SubmissionMapper {
       if (entity.registration.team) {
         dto.teamName = entity.registration.team.name;
         dto.institution = entity.registration.team.institution;
-        dto.members = entity.registration.team.members ? entity.registration.team.members.map((m) => ({
-          name: m.user ? (m.user.fullName ?? m.user.email) : 'Anggota Tidak Diketahui',
-          avatar: m.user ? m.user.avatarUrl : null,
-          email: m.user ? m.user.email : null,
-          phone: m.user ? m.user.phoneNumber : null,
-        })) : [];
+        dto.members = entity.registration.team.members
+          ? entity.registration.team.members.map((m) => ({
+              name: m.user
+                ? (m.user.fullName ?? m.user.email)
+                : 'Anggota Tidak Diketahui',
+              avatar: m.user ? m.user.avatarUrl : null,
+              email: m.user ? m.user.email : null,
+              phone: m.user ? m.user.phoneNumber : null,
+            }))
+          : [];
         if (entity.registration.team.leader) {
-          dto.participantName = entity.registration.team.leader.fullName ?? entity.registration.team.leader.email;
+          dto.participantName =
+            entity.registration.team.leader.fullName ??
+            entity.registration.team.leader.email;
           dto.participantAvatar = entity.registration.team.leader.avatarUrl;
           dto.participantEmail = entity.registration.team.leader.email;
           dto.participantPhone = entity.registration.team.leader.phoneNumber;
         }
       } else if (entity.registration.user) {
-        dto.participantName = entity.registration.user.fullName ?? entity.registration.user.email;
+        dto.participantName =
+          entity.registration.user.fullName ?? entity.registration.user.email;
         dto.participantAvatar = entity.registration.user.avatarUrl;
         dto.participantEmail = entity.registration.user.email;
         dto.participantPhone = entity.registration.user.phoneNumber;

@@ -44,11 +44,7 @@ async function bootstrap(): Promise<void> {
   const nodeEnv = configService.get<string>('NODE_ENV', 'development');
   const isProd = nodeEnv === 'production';
 
-  const requiredSecrets = [
-    'JWT_SECRET',
-    'COOKIE_SECRET',
-    'CSRF_SECRET',
-  ];
+  const requiredSecrets = ['JWT_SECRET', 'COOKIE_SECRET', 'CSRF_SECRET'];
 
   for (const key of requiredSecrets) {
     const value = configService.get<string>(key);

@@ -50,5 +50,5 @@ export class UploadFileDto {
   // when using Multer.
   @ApiPropertyOptional({ type: 'string', format: 'binary' })
   @IsOptional()
-  file?: any;
+  file?: unknown;
 }

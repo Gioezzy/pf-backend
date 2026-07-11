@@ -40,16 +40,16 @@ export class SubmissionRepository implements ISubmissionRepository {
   ): Promise<SubmissionEntity[]> {
     return this.repo.find({
       where: { registration: { competitionId } },
-      relations: { 
-        registration: { 
-          user: true, 
+      relations: {
+        registration: {
+          user: true,
           team: {
             leader: true,
             members: {
-              user: true
-            }
-          } 
-        } 
+              user: true,
+            },
+          },
+        },
       }, // Tarik data peserta juga
     });
   }
