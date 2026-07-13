@@ -21,7 +21,11 @@ export class TeamMapper {
     dto.institution = entity.institution;
     dto.createdAt = entity.createdAt;
     dto.isRegistered = Array.isArray(entity.registrations) && 
-      entity.registrations.some(r => r.status === RegistrationStatus.VERIFIED);
+      entity.registrations.some(r => 
+        r.status === RegistrationStatus.PENDING_PAYMENT || 
+        r.status === RegistrationStatus.PENDING_VERIFICATION || 
+        r.status === RegistrationStatus.VERIFIED
+      );
       if (entity.leader) {
       dto.leader = {
         id: entity.leader.id,
