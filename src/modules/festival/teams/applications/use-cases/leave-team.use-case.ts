@@ -34,11 +34,13 @@ export class LeaveTeamUseCase {
       // Ketua tim keluar -> Bubarkan tim
       await this.teamRepo.delete(team.id!);
       return {
-        message: 'Berhasil membatalkan status sebagai ketua tim. Tim telah dibubarkan.',
+        message:
+          'Berhasil membatalkan status sebagai ketua tim. Tim telah dibubarkan.',
       };
     } else {
       // Anggota tim keluar
-      const memberIndex = team.members?.findIndex((m) => m.userId === userId) ?? -1;
+      const memberIndex =
+        team.members?.findIndex((m) => m.userId === userId) ?? -1;
       if (memberIndex !== -1 && team.members) {
         team.members.splice(memberIndex, 1);
         await this.teamRepo.save(team);

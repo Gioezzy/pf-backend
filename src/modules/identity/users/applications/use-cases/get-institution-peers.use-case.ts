@@ -25,7 +25,11 @@ export class GetInstitutionPeersUseCase {
       return [];
     }
 
-    const peers = await this.userRepo.findInstitutionPeers(userId, user.npsn, user.institution);
+    const peers = await this.userRepo.findInstitutionPeers(
+      userId,
+      user.npsn,
+      user.institution,
+    );
     return this.mapper.toResponseDtoList(peers);
   }
 }

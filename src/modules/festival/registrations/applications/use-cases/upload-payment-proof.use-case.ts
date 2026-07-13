@@ -53,21 +53,21 @@ export class UploadPaymentProofUseCase {
           idFile,
           { context: 'identity-cards', purpose: FilePurpose.GENERAL },
           userId,
-        )
-      )
+        ),
+      ),
     );
 
     const newAttempt = new PaymentAttemptEntity();
     newAttempt.proofOfPaymentFileId = uploaded.storedFileId;
     newAttempt.proofOfPaymentUrl = uploaded.fileUrl;
-    
+
     if (uploadedIdentities.length > 0) {
-      const urls = uploadedIdentities.map(u => u.fileUrl);
-      const ids = uploadedIdentities.map(u => u.storedFileId);
+      const urls = uploadedIdentities.map((u) => u.fileUrl);
+      const ids = uploadedIdentities.map((u) => u.storedFileId);
       newAttempt.identityCardFileIds = JSON.stringify(ids);
       newAttempt.identityCardUrls = JSON.stringify(urls);
     }
-    
+
     newAttempt.status = PaymentAttemptStatus.PENDING;
 
     if (!registration.paymentAttempts) {

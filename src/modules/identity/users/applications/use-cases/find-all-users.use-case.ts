@@ -16,7 +16,9 @@ export class FindAllUsersUseCase {
     private readonly userMapper: UserMapper,
   ) {}
 
-  async execute(query: FindAllUsersQuery = {}): Promise<PaginatedResult<UserResponseDto>> {
+  async execute(
+    query: FindAllUsersQuery = {},
+  ): Promise<PaginatedResult<UserResponseDto>> {
     const result = await this.userRepo.findAllPaginated(query);
     return {
       ...result,

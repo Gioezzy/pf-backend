@@ -12,7 +12,10 @@ import { FindAllUsersUseCase } from '../use-cases/find-all-users.use-case';
 import { SearchParticipantsUseCase } from '../use-cases/search-participants.use-case';
 import { GetInstitutionPeersUseCase } from '../use-cases/get-institution-peers.use-case';
 import { AdminCreateUserDto } from '../dto/admin-create-user.dto';
-import { type FindAllUsersQuery, type PaginatedResult } from '../../infrastructures/repositories/user.repository.interface';
+import {
+  type FindAllUsersQuery,
+  type PaginatedResult,
+} from '../../infrastructures/repositories/user.repository.interface';
 
 @Injectable()
 export class UserOrchestrator {
@@ -54,7 +57,9 @@ export class UserOrchestrator {
     return this.adminCreateUserUc.execute(dto);
   }
 
-  findAll(query: FindAllUsersQuery = {}): Promise<PaginatedResult<UserResponseDto>> {
+  findAll(
+    query: FindAllUsersQuery = {},
+  ): Promise<PaginatedResult<UserResponseDto>> {
     return this.findAllUsersUc.execute(query);
   }
 

@@ -130,7 +130,9 @@ export class TeamsController {
   @Delete('members/:memberId')
   @Roles(UserRole.PARTICIPANT)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Mengeluarkan anggota dari tim (Hanya dapat diakses Ketua Tim)' })
+  @ApiOperation({
+    summary: 'Mengeluarkan anggota dari tim (Hanya dapat diakses Ketua Tim)',
+  })
   @ApiOkResponse({
     description: 'Anggota berhasil dikeluarkan dari tim.',
   })
@@ -148,7 +150,10 @@ export class TeamsController {
   @Put('my-team/transfer-leadership/:newLeaderId')
   @Roles(UserRole.PARTICIPANT)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Memindahkan kepemimpinan tim ke anggota lain (Hanya dapat diakses Ketua Tim)' })
+  @ApiOperation({
+    summary:
+      'Memindahkan kepemimpinan tim ke anggota lain (Hanya dapat diakses Ketua Tim)',
+  })
   @ApiOkResponse({
     description: 'Kepemimpinan berhasil dipindahkan.',
     type: TeamResponseDto,

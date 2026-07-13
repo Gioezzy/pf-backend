@@ -34,9 +34,13 @@ export class RegistrationMapper {
     attempts.sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
     const latestAttempt = attempts[0];
 
-    const parseJsonArray = (val: string | null) => {
-      try { return val ? JSON.parse(val) : []; }
-      catch { return []; }
+    const parseJsonArray = (val: string | null): string[] => {
+      try {
+        const parsed: unknown = val ? JSON.parse(val) : [];
+        return Array.isArray(parsed) ? parsed.map(String) : [];
+      } catch {
+        return [];
+      }
     };
 
     if (latestAttempt) {

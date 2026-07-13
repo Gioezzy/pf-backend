@@ -11,7 +11,6 @@ import {
   TEAM_REPOSITORY_TOKEN,
 } from '../../infrastructures/repositories/team.repository.interface';
 import { TeamMapper } from '../../domains/mappers/team.mapper';
-import { TeamMemberEntity } from '../../domains/entities/team-member.entity';
 
 @Injectable()
 export class TransferLeadershipUseCase {
@@ -21,7 +20,10 @@ export class TransferLeadershipUseCase {
     private readonly mapper: TeamMapper,
   ) {}
 
-  async execute(leaderId: string, newLeaderId: string): Promise<TeamResponseDto> {
+  async execute(
+    leaderId: string,
+    newLeaderId: string,
+  ): Promise<TeamResponseDto> {
     const team = await this.teamRepo.findByUserId(leaderId);
     if (!team) {
       throw new BadRequestException('Anda belum tergabung dalam tim manapun.');
@@ -39,7 +41,9 @@ export class TransferLeadershipUseCase {
 
     const memberIndex = team.members.findIndex((m) => m.userId === newLeaderId);
     if (memberIndex === -1) {
-      throw new BadRequestException('Calon ketua baru tidak ada di dalam tim ini.');
+      throw new BadRequestException(
+        'Calon ketua baru tidak ada di dalam tim ini.',
+      );
     }
 
     // 1. Dapatkan user entitas dari calon ketua baru
@@ -48,7 +52,7 @@ export class TransferLeadershipUseCase {
     // 2. Jadikan leader lama sebagai member (timpa member yang sudah ada untuk swap aman)
     team.members[memberIndex].userId = leaderId;
     team.members[memberIndex].user = team.leader;
-    
+
     // 3. Set leader baru
     team.leaderId = newLeaderId;
     team.leader = newLeaderUser;

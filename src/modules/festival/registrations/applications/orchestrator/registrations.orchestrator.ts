@@ -54,7 +54,12 @@ export class RegistrationsOrchestrator {
     file: Express.Multer.File | undefined,
     identityCardFiles: Express.Multer.File[],
   ): Promise<RegistrationResponseDto> {
-    return this.uploadPaymentProofUc.execute(registrationId, userId, file, identityCardFiles);
+    return this.uploadPaymentProofUc.execute(
+      registrationId,
+      userId,
+      file,
+      identityCardFiles,
+    );
   }
 
   async verifyPayment(

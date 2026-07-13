@@ -41,7 +41,9 @@ export class RemoveMemberUseCase {
     // 3. Pastikan member yang mau dihapus ada di tim ini
     const memberIndex = team.members.findIndex((m) => m.userId === memberId);
     if (memberIndex === -1) {
-      throw new BadRequestException('Anggota tersebut tidak ada di dalam tim ini.');
+      throw new BadRequestException(
+        'Anggota tersebut tidak ada di dalam tim ini.',
+      );
     }
 
     // 4. Hapus dari array (karena kita akan pakai .save yang akan meng-cascade perubahan ke team_members)

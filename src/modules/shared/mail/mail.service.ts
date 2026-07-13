@@ -49,7 +49,7 @@ export class MailService implements OnModuleInit {
     });
   }
 
-  async onModuleInit(): Promise<void> {
+  onModuleInit(): void {
     // Jalankan verifikasi di background agar tidak memblokir startup (terutama di Hostinger)
     this.transporter
       .verify()

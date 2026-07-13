@@ -39,11 +39,17 @@ export class TeamsOrchestrator {
     return this.leaveTeamUc.execute(userId);
   }
 
-  async removeMember(leaderId: string, memberId: string): Promise<TeamResponseDto> {
+  async removeMember(
+    leaderId: string,
+    memberId: string,
+  ): Promise<TeamResponseDto> {
     return this.removeMemberUc.execute(leaderId, memberId);
   }
 
-  async transferLeadership(leaderId: string, newLeaderId: string): Promise<TeamResponseDto> {
+  async transferLeadership(
+    leaderId: string,
+    newLeaderId: string,
+  ): Promise<TeamResponseDto> {
     return this.transferLeadershipUc.execute(leaderId, newLeaderId);
   }
 }

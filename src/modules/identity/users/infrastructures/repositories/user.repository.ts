@@ -3,7 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { UserEntity } from '../../domains/entities/user.entity';
-import { IUserRepository, type FindAllUsersQuery, type PaginatedResult } from './user.repository.interface';
+import {
+  IUserRepository,
+  type FindAllUsersQuery,
+  type PaginatedResult,
+} from './user.repository.interface';
 import { UserRole } from '../../../users/domains/entities/user.entity';
 
 @Injectable()
@@ -37,17 +41,18 @@ export class UserRepository implements IUserRepository {
     return this.ormRepo.find({ where: { isActive: true } });
   }
 
-  async findAllPaginated(query: FindAllUsersQuery): Promise<PaginatedResult<UserEntity>> {
+  async findAllPaginated(
+    query: FindAllUsersQuery,
+  ): Promise<PaginatedResult<UserEntity>> {
     const { page = 1, limit = 10, role, search } = query;
     const skip = (page - 1) * limit;
 
     const qb = this.ormRepo.createQueryBuilder('user').where('1=1');
 
     if (search) {
-      qb.andWhere(
-        '(user.fullName ILIKE :search OR user.email ILIKE :search)',
-        { search: `%${search}%` },
-      );
+      qb.andWhere('(user.fullName ILIKE :search OR user.email ILIKE :search)', {
+        search: `%${search}%`,
+      });
     }
 
     if (role) {
@@ -111,8 +116,13 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async findInstitutionPeers(userId: string, npsn: string | null, institution: string): Promise<UserEntity[]> {
-    const qb = this.ormRepo.createQueryBuilder('user')
+  async findInstitutionPeers(
+    userId: string,
+    npsn: string | null,
+    institution: string,
+  ): Promise<UserEntity[]> {
+    const qb = this.ormRepo
+      .createQueryBuilder('user')
       .where('user.role = :role', { role: UserRole.PARTICIPANT })
       .andWhere('user.id != :userId', { userId })
       .andWhere('user.isActive = :isActive', { isActive: true });
@@ -120,7 +130,10 @@ export class UserRepository implements IUserRepository {
     if (npsn) {
       // Prioritize NPSN if available, fallback to institution if not strictly matching? No, the user says "satu institusi dan satu npsn"
       // Wait, if NPSN is provided, we can match exactly on NPSN.
-      qb.andWhere('(user.npsn = :npsn OR user.institution = :institution)', { npsn, institution });
+      qb.andWhere('(user.npsn = :npsn OR user.institution = :institution)', {
+        npsn,
+        institution,
+      });
     } else {
       qb.andWhere('user.institution = :institution', { institution });
     }

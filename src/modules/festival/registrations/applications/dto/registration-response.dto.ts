@@ -52,7 +52,7 @@ export class RegistrationResponseDto {
   proofOfPaymentUrl?: string | null;
   @ApiPropertyOptional({
     description: 'Array URL kartu identitas/tanda siswa yang diunggah peserta.',
-    type: [String]
+    type: [String],
   })
   identityCardUrls?: string[];
   @ApiPropertyOptional({ description: 'Waktu bukti pembayaran diunggah.' })

@@ -11,7 +11,6 @@ import {
   Param,
   ParseUUIDPipe,
   Patch,
-  UploadedFile,
   UseFilters,
   UseInterceptors,
   UploadedFiles,
@@ -136,7 +135,8 @@ export class RegistrationsController {
         identityCardFile: {
           type: 'string',
           format: 'binary',
-          description: 'File kartu identitas/tanda siswa (JPG/PNG/WebP/PDF, maks 20MB)',
+          description:
+            'File kartu identitas/tanda siswa (JPG/PNG/WebP/PDF, maks 20MB)',
         },
       },
     },
@@ -159,7 +159,8 @@ export class RegistrationsController {
   })
   uploadPaymentProof(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @UploadedFiles() files: {
+    @UploadedFiles()
+    files: {
       file?: Express.Multer.File[];
       identityCardFile?: Express.Multer.File[];
     },
@@ -173,7 +174,12 @@ export class RegistrationsController {
     }
     const paymentFile = files?.file?.[0];
     const identityCardFiles = files?.identityCardFile || [];
-    return this.orchestrator.uploadPaymentProof(id, activeUserId, paymentFile, identityCardFiles);
+    return this.orchestrator.uploadPaymentProof(
+      id,
+      activeUserId,
+      paymentFile,
+      identityCardFiles,
+    );
   }
 
   // ── Verifikasi Bukti Pembayaran (Bendahara) ──────────────────────────────

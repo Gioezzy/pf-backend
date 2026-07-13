@@ -20,13 +20,15 @@ export class TeamMapper {
     dto.name = entity.name;
     dto.institution = entity.institution;
     dto.createdAt = entity.createdAt;
-    dto.isRegistered = Array.isArray(entity.registrations) && 
-      entity.registrations.some(r => 
-        r.status === RegistrationStatus.PENDING_PAYMENT || 
-        r.status === RegistrationStatus.PENDING_VERIFICATION || 
-        r.status === RegistrationStatus.VERIFIED
+    dto.isRegistered =
+      Array.isArray(entity.registrations) &&
+      entity.registrations.some(
+        (r) =>
+          r.status === RegistrationStatus.PENDING_PAYMENT ||
+          r.status === RegistrationStatus.PENDING_VERIFICATION ||
+          r.status === RegistrationStatus.VERIFIED,
       );
-      if (entity.leader) {
+    if (entity.leader) {
       dto.leader = {
         id: entity.leader.id,
         fullName: entity.leader.fullName ?? 'Tanpa Nama',

@@ -11,7 +11,6 @@ import {
   Patch,
   UseFilters,
   UseGuards,
-  Header,
   Post,
   Query,
 } from '@nestjs/common';
@@ -77,7 +76,9 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '(ADMIN) Mendapatkan daftar seluruh user dengan pagination' })
+  @ApiOperation({
+    summary: '(ADMIN) Mendapatkan daftar seluruh user dengan pagination',
+  })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @ApiQuery({ name: 'role', required: false, type: String, example: 'ADMIN' })

@@ -31,7 +31,10 @@ import { LoggingMiddleware } from './modules/shared/common/middlewares/logging.m
     ConfigModule.forRoot({
       isGlobal: true,
       validate,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env' : '.env.development.local',
+      envFilePath:
+        process.env.NODE_ENV === 'production'
+          ? '.env'
+          : '.env.development.local',
     }),
 
     // 2. Konfigurasi Database (TypeORM - MySQL)
