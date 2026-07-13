@@ -19,13 +19,16 @@ export class TeamMapper {
     dto.name = entity.name;
     dto.institution = entity.institution;
     dto.createdAt = entity.createdAt;
+    dto.isRegistered = Array.isArray(entity.registrations) && entity.registrations.length > 0;
 
-    if (entity.leader) {
+      if (entity.leader) {
       dto.leader = {
         id: entity.leader.id,
         fullName: entity.leader.fullName ?? 'Tanpa Nama',
         email: entity.leader.email,
         avatarUrl: entity.leader.avatarUrl,
+        institution: entity.leader.institution,
+        npsn: entity.leader.npsn,
       };
     }
 
@@ -40,6 +43,8 @@ export class TeamMapper {
       memberDto.fullName = m.user.fullName ?? 'Tanpa Nama';
       memberDto.joinedAt = m.joinedAt;
       memberDto.avatarUrl = m.user.avatarUrl;
+      memberDto.institution = m.user.institution;
+      memberDto.npsn = m.user.npsn;
 
       return memberDto;
     });

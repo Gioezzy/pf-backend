@@ -10,6 +10,7 @@ import {
   UseGuards,
   Delete,
   Param,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -142,5 +143,24 @@ export class TeamsController {
   ): Promise<TeamResponseDto> {
     const sub = req.user.sub;
     return this.orchestrator.removeMember(sub, memberId);
+  }
+
+  @Put('my-team/transfer-leadership/:newLeaderId')
+  @Roles(UserRole.PARTICIPANT)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Memindahkan kepemimpinan tim ke anggota lain (Hanya dapat diakses Ketua Tim)' })
+  @ApiOkResponse({
+    description: 'Kepemimpinan berhasil dipindahkan.',
+    type: TeamResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Calon ketua baru tidak ditemukan di dalam tim.',
+  })
+  async transferLeadership(
+    @Req() req: RequestWithUser,
+    @Param('newLeaderId') newLeaderId: string,
+  ): Promise<TeamResponseDto> {
+    const sub = req.user.sub;
+    return this.orchestrator.transferLeadership(sub, newLeaderId);
   }
 }

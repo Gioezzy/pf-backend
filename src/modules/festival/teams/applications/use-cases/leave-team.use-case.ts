@@ -23,24 +23,29 @@ export class LeaveTeamUseCase {
       throw new BadRequestException('Anda belum tergabung dalam tim manapun.');
     }
 
-    if (team.leaderId !== userId) {
-      throw new BadRequestException(
-        'Hanya ketua tim yang dapat membubarkan/meninggalkan tim.',
-      );
-    }
-
     const regs = await this.regRepo.findByTeamId(team.id!);
     if (regs && regs.length > 0) {
       throw new BadRequestException(
-        'Tim tidak dapat dibubarkan karena sudah terdaftar di perlombaan.',
+        'Tim tidak dapat dibubarkan/ditinggalkan karena sudah terdaftar di perlombaan.',
       );
     }
 
-    await this.teamRepo.delete(team.id!);
-
-    return {
-      message:
-        'Berhasil membatalkan status sebagai ketua tim. Tim telah dibubarkan.',
-    };
+    if (team.leaderId === userId) {
+      // Ketua tim keluar -> Bubarkan tim
+      await this.teamRepo.delete(team.id!);
+      return {
+        message: 'Berhasil membatalkan status sebagai ketua tim. Tim telah dibubarkan.',
+      };
+    } else {
+      // Anggota tim keluar
+      const memberIndex = team.members?.findIndex((m) => m.userId === userId) ?? -1;
+      if (memberIndex !== -1 && team.members) {
+        team.members.splice(memberIndex, 1);
+        await this.teamRepo.save(team);
+      }
+      return {
+        message: 'Berhasil keluar dari tim.',
+      };
+    }
   }
 }

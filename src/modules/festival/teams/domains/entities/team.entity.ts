@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../../../../identity/users/domains/entities/user.entity';
 import { TeamMemberEntity } from './team-member.entity';
+import { CompetitionRegistrationEntity } from '../../../registrations/domains/entities/registration.entity';
 
 @Entity('teams')
 @Index('uq_teams_leader', ['leaderId'], { unique: true })
@@ -38,6 +39,9 @@ export class TeamEntity {
     cascade: true,
   })
   members?: TeamMemberEntity[];
+
+  @OneToMany(() => CompetitionRegistrationEntity, (reg) => reg.team)
+  registrations?: CompetitionRegistrationEntity[];
 
   @CreateDateColumn()
   createdAt?: Date;

@@ -7,6 +7,7 @@ import { AddMemberUseCase } from '../use-cases/add-member.use-case';
 import { GetMyTeamUseCase } from '../use-cases/get-my-team.use-case';
 import { LeaveTeamUseCase } from '../use-cases/leave-team.use-case';
 import { RemoveMemberUseCase } from '../use-cases/remove-member.use-case';
+import { TransferLeadershipUseCase } from '../use-cases/transfer-leadership.use-case';
 
 @Injectable()
 export class TeamsOrchestrator {
@@ -16,6 +17,7 @@ export class TeamsOrchestrator {
     private readonly getMyTeamUc: GetMyTeamUseCase,
     private readonly leaveTeamUc: LeaveTeamUseCase,
     private readonly removeMemberUc: RemoveMemberUseCase,
+    private readonly transferLeadershipUc: TransferLeadershipUseCase,
   ) {}
 
   async createTeam(
@@ -39,5 +41,9 @@ export class TeamsOrchestrator {
 
   async removeMember(leaderId: string, memberId: string): Promise<TeamResponseDto> {
     return this.removeMemberUc.execute(leaderId, memberId);
+  }
+
+  async transferLeadership(leaderId: string, newLeaderId: string): Promise<TeamResponseDto> {
+    return this.transferLeadershipUc.execute(leaderId, newLeaderId);
   }
 }

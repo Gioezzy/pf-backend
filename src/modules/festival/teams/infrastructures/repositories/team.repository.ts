@@ -23,6 +23,7 @@ export class TeamRepository implements ITeamRepository {
         members: {
           user: true,
         },
+        registrations: true,
       },
     });
   }
