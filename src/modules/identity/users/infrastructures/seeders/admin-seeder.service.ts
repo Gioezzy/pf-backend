@@ -14,7 +14,21 @@ export class AdminSeederService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
+    await this.ensureNpsnColumn();
     await this.seedAdmin();
+  }
+
+  private async ensureNpsnColumn() {
+    try {
+      await this.userRepo.query('SELECT npsn FROM users LIMIT 1');
+    } catch (e) {
+      try {
+        await this.userRepo.query('ALTER TABLE `users` ADD COLUMN `npsn` varchar(20) NULL');
+        this.logger.log('✅ Kolom npsn berhasil ditambahkan ke tabel users secara otomatis!');
+      } catch (err) {
+        this.logger.error('❌ Gagal menambahkan kolom npsn secara otomatis', err);
+      }
+    }
   }
 
   private async seedAdmin() {
