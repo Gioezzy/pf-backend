@@ -38,3 +38,14 @@ export const MultipleFileUploadInterceptor = FileFieldsInterceptor(
   ],
   multipleMulterOptions,
 );
+
+/**
+ * Interceptor untuk upload bukti pembayaran dan kartu pelajar.
+ */
+export const RegistrationFileUploadInterceptor = FileFieldsInterceptor(
+  [
+    { name: 'file', maxCount: 1 },
+    { name: 'identityCardFile', maxCount: 5 }, // Maksimal 5 file untuk anggota tim
+  ],
+  multipleMulterOptions,
+);

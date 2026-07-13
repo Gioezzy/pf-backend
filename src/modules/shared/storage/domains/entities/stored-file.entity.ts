@@ -21,6 +21,7 @@ export enum FilePurpose {
   COMPETITION_WORK = 'COMPETITION_WORK',
   PAYMENT_PROOF = 'PAYMENT_PROOF',
   OTHER = 'OTHER',
+  GENERAL = 'GENERAL',
 }
 
 @Entity({ name: 'stored_files' })

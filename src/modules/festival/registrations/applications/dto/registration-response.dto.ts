@@ -8,6 +8,7 @@ import { PaymentAttemptStatus } from '../../domains/entities/payment-attempt.ent
 export class PaymentAttemptDto {
   @ApiProperty() id: string = '';
   @ApiProperty() proofOfPaymentUrl: string = '';
+  @ApiPropertyOptional() identityCardUrls?: string[];
   @ApiProperty({ enum: PaymentAttemptStatus }) status: PaymentAttemptStatus =
     PaymentAttemptStatus.PENDING;
   @ApiPropertyOptional() rejectionReason?: string | null;
@@ -49,6 +50,11 @@ export class RegistrationResponseDto {
     description: 'URL bukti pembayaran yang diunggah peserta.',
   })
   proofOfPaymentUrl?: string | null;
+  @ApiPropertyOptional({
+    description: 'Array URL kartu identitas/tanda siswa yang diunggah peserta.',
+    type: [String]
+  })
+  identityCardUrls?: string[];
   @ApiPropertyOptional({ description: 'Waktu bukti pembayaran diunggah.' })
   proofUploadedAt?: Date | null;
 

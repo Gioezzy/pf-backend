@@ -41,6 +41,13 @@ export class PaymentAttemptEntity {
   @JoinColumn({ name: 'proofOfPaymentFileId' })
   proofOfPaymentFile?: StoredFileEntity;
 
+  // Fitur Baru: Kartu Tanda Siswa / Identitas (Bisa lebih dari 1 untuk tim)
+  @Column({ type: 'text', nullable: true })
+  identityCardUrls!: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  identityCardFileIds!: string | null;
+
   @Column({
     type: 'enum',
     enum: PaymentAttemptStatus,

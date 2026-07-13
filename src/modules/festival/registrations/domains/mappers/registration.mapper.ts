@@ -34,13 +34,20 @@ export class RegistrationMapper {
     attempts.sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
     const latestAttempt = attempts[0];
 
+    const parseJsonArray = (val: string | null) => {
+      try { return val ? JSON.parse(val) : []; }
+      catch { return []; }
+    };
+
     if (latestAttempt) {
       dto.proofOfPaymentUrl = latestAttempt.proofOfPaymentUrl;
+      dto.identityCardUrls = parseJsonArray(latestAttempt.identityCardUrls);
       dto.proofUploadedAt = latestAttempt.uploadedAt;
       dto.verificationNote = latestAttempt.rejectionReason;
       dto.verifiedAt = latestAttempt.verifiedAt;
     } else {
       dto.proofOfPaymentUrl = null;
+      dto.identityCardUrls = [];
       dto.proofUploadedAt = null;
       dto.verificationNote = null;
       dto.verifiedAt = null;
@@ -49,6 +56,7 @@ export class RegistrationMapper {
     dto.paymentAttempts = attempts.map((attempt) => ({
       id: attempt.id,
       proofOfPaymentUrl: attempt.proofOfPaymentUrl,
+      identityCardUrls: parseJsonArray(attempt.identityCardUrls),
       status: attempt.status,
       rejectionReason: attempt.rejectionReason,
       verifiedAt: attempt.verifiedAt,

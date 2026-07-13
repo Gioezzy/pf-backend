@@ -31,6 +31,7 @@ export class UploadPaymentProofUseCase {
     registrationId: string,
     userId: string,
     file: Express.Multer.File | undefined,
+    identityCardFiles: Express.Multer.File[] = [],
   ): Promise<RegistrationResponseDto> {
     const registration = await this.regRepo.findById(registrationId);
     if (!registration) {
@@ -46,9 +47,27 @@ export class UploadPaymentProofUseCase {
       userId,
     );
 
+    const uploadedIdentities = await Promise.all(
+      identityCardFiles.map((idFile) =>
+        this.storageOrchestrator.upload(
+          idFile,
+          { context: 'identity-cards', purpose: FilePurpose.GENERAL },
+          userId,
+        )
+      )
+    );
+
     const newAttempt = new PaymentAttemptEntity();
     newAttempt.proofOfPaymentFileId = uploaded.storedFileId;
     newAttempt.proofOfPaymentUrl = uploaded.fileUrl;
+    
+    if (uploadedIdentities.length > 0) {
+      const urls = uploadedIdentities.map(u => u.fileUrl);
+      const ids = uploadedIdentities.map(u => u.storedFileId);
+      newAttempt.identityCardFileIds = JSON.stringify(ids);
+      newAttempt.identityCardUrls = JSON.stringify(urls);
+    }
+    
     newAttempt.status = PaymentAttemptStatus.PENDING;
 
     if (!registration.paymentAttempts) {
