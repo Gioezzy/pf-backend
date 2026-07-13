@@ -260,8 +260,29 @@ export class AuthController {
     },
   })
   @ApiBody({ type: VerifyEmailDto })
-  async verifyEmail(@Body() dto: VerifyEmailDto): Promise<AuthResponseDto> {
-    return this.orchestrator.verifyEmail(dto.email, dto.otp);
+  async verifyEmail(
+    @Body() dto: VerifyEmailDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.orchestrator.verifyEmail(dto.email, dto.otp);
+
+    // Set HttpOnly Cookie
+    res.cookie('accessToken', result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+      domain:
+        process.env.NODE_ENV === 'production'
+          ? '.physicsfest.my.id'
+          : undefined,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Hari
+    });
+
+    return {
+      message: 'Verifikasi berhasil',
+      user: result.user,
+    };
   }
 
   @Public()
