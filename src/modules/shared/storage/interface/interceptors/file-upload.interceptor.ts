@@ -42,10 +42,18 @@ export const MultipleFileUploadInterceptor = FileFieldsInterceptor(
 /**
  * Interceptor untuk upload bukti pembayaran dan kartu pelajar.
  */
+const registrationMulterOptions: MulterOptions = {
+  storage: storageEngine,
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20MB
+    files: 6, // 1 file payment + maks 5 identityCardFile
+  },
+};
+
 export const RegistrationFileUploadInterceptor = FileFieldsInterceptor(
   [
     { name: 'file', maxCount: 1 },
     { name: 'identityCardFile', maxCount: 5 }, // Maksimal 5 file untuk anggota tim
   ],
-  multipleMulterOptions,
+  registrationMulterOptions,
 );
