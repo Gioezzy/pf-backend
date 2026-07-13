@@ -13,6 +13,7 @@ export class UserMapper {
       avatarUrl: entity.avatarUrl,
       phoneNumber: entity.phoneNumber,
       institution: entity.institution,
+      npsn: entity.npsn,
       role: entity.role,
       isActive: entity.isActive,
       createdAt: entity.createdAt,

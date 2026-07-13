@@ -23,6 +23,7 @@ import { UpdateAvatarUseCase } from './applications/use-cases/update-avatar.use-
 import { AdminCreateUserUseCase } from './applications/use-cases/admin-create-comitte-user.use-case';
 import { FindAllUsersUseCase } from './applications/use-cases/find-all-users.use-case';
 import { SearchParticipantsUseCase } from './applications/use-cases/search-participants.use-case';
+import { GetInstitutionPeersUseCase } from './applications/use-cases/get-institution-peers.use-case';
 
 // Orchestrator
 import { UserOrchestrator } from './applications/orchestrator/user.orchestrator';
@@ -45,6 +46,7 @@ const USE_CASES = [
   AdminCreateUserUseCase,
   FindAllUsersUseCase,
   SearchParticipantsUseCase,
+  GetInstitutionPeersUseCase,
 ];
 
 @Module({

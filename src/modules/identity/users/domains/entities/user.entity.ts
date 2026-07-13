@@ -52,6 +52,9 @@ export class UserEntity {
   @Column({ type: 'varchar', length: 255, nullable: false })
   institution: string = '';
 
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  npsn: string | null = null;
+
   // ── Status & Role ────────────────────────────────────────────
   @Column({ type: 'boolean', default: true })
   isActive: boolean = true;

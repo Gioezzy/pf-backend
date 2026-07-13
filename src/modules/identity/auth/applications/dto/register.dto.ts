@@ -84,4 +84,13 @@ export class RegisterDto {
   @IsNotEmpty({ message: 'Asal institusi wajib diisi' })
   @MaxLength(255)
   institution: string = '';
+
+  @ApiPropertyOptional({
+    description: 'NPSN sekolah untuk mempermudah pencarian tim.',
+    example: '12345678',
+    maxLength: 20,
+  })
+  @IsString({ message: 'NPSN harus berupa teks' })
+  @MaxLength(20)
+  npsn?: string;
 }

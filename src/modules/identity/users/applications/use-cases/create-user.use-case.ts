@@ -41,6 +41,7 @@ export class CreateUserUseCase {
       fullName: dto.fullName ?? undefined,
       phoneNumber: dto.phoneNumber,
       institution: dto.institution,
+      npsn: dto.npsn ?? null,
     });
 
     this.eventEmitter.emit(

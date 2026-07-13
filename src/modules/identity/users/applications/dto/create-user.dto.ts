@@ -38,4 +38,9 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Asal institusi wajib diisi' })
   @MaxLength(255)
   institution: string = '';
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(20)
+  npsn?: string;
 }

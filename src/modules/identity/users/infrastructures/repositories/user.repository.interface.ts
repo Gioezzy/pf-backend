@@ -29,6 +29,7 @@ export interface IUserRepository {
   softDelete(id: string): Promise<void>;
   existsByEmail(email: string): Promise<boolean>;
   searchParticipants(query: string): Promise<UserEntity[]>;
+  findInstitutionPeers(userId: string, npsn: string | null, institution: string): Promise<UserEntity[]>;
 }
 
 export const USER_REPOSITORY_TOKEN = Symbol('IUserRepository');

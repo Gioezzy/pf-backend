@@ -28,6 +28,7 @@ export class RegisterUseCase {
       fullName: dto.fullName,
       phoneNumber: dto.phoneNumber,
       institution: dto.institution,
+      npsn: dto.npsn,
     };
 
     // 2. Insert user ke database

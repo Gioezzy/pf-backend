@@ -110,4 +110,21 @@ export class UserRepository implements IUserRepository {
       take: 10,
     });
   }
+
+  async findInstitutionPeers(userId: string, npsn: string | null, institution: string): Promise<UserEntity[]> {
+    const qb = this.ormRepo.createQueryBuilder('user')
+      .where('user.role = :role', { role: UserRole.PARTICIPANT })
+      .andWhere('user.id != :userId', { userId })
+      .andWhere('user.isActive = :isActive', { isActive: true });
+
+    if (npsn) {
+      // Prioritize NPSN if available, fallback to institution if not strictly matching? No, the user says "satu institusi dan satu npsn"
+      // Wait, if NPSN is provided, we can match exactly on NPSN.
+      qb.andWhere('(user.npsn = :npsn OR user.institution = :institution)', { npsn, institution });
+    } else {
+      qb.andWhere('user.institution = :institution', { institution });
+    }
+
+    return qb.take(20).getMany();
+  }
 }

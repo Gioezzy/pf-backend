@@ -10,6 +10,7 @@ import { UpdateAvatarUseCase } from '../use-cases/update-avatar.use-case';
 import { AdminCreateUserUseCase } from '../use-cases/admin-create-comitte-user.use-case';
 import { FindAllUsersUseCase } from '../use-cases/find-all-users.use-case';
 import { SearchParticipantsUseCase } from '../use-cases/search-participants.use-case';
+import { GetInstitutionPeersUseCase } from '../use-cases/get-institution-peers.use-case';
 import { AdminCreateUserDto } from '../dto/admin-create-user.dto';
 import { type FindAllUsersQuery, type PaginatedResult } from '../../infrastructures/repositories/user.repository.interface';
 
@@ -24,6 +25,7 @@ export class UserOrchestrator {
     private readonly adminCreateUserUc: AdminCreateUserUseCase,
     private readonly findAllUsersUc: FindAllUsersUseCase,
     private readonly searchParticipantsUc: SearchParticipantsUseCase,
+    private readonly getInstitutionPeersUc: GetInstitutionPeersUseCase,
   ) {}
 
   getById(id: string): Promise<UserResponseDto> {
@@ -58,5 +60,9 @@ export class UserOrchestrator {
 
   searchParticipants(query: string): Promise<UserResponseDto[]> {
     return this.searchParticipantsUc.execute(query);
+  }
+
+  getInstitutionPeers(userId: string): Promise<UserResponseDto[]> {
+    return this.getInstitutionPeersUc.execute(userId);
   }
 }

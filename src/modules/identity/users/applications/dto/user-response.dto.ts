@@ -41,6 +41,13 @@ export class UserResponseDto {
   })
   institution: string = '';
 
+  @ApiPropertyOptional({
+    example: '12345678',
+    nullable: true,
+    description: 'NPSN sekolah',
+  })
+  npsn: string | null = null;
+
   @ApiProperty({
     example: 'PARTICIPANT',
     description: 'Role user',

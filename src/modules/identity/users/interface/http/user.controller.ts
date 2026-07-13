@@ -116,11 +116,29 @@ export class UserController {
     return this.orchestrator.searchParticipants(query);
   }
 
+  // ── GET /users/institution-peers ───────────────────────────────────────────
+
+  @SkipThrottle()
+  @Get('institution-peers')
+  @HttpCode(HttpStatus.OK)
+  @Roles(UserRole.PARTICIPANT)
+  @ApiOperation({
+    summary: 'Mendapatkan daftar peserta dengan NPSN / Institusi yang sama',
+  })
+  @ApiOkResponse({
+    description: 'Berhasil mendapatkan daftar peserta satu institusi',
+    type: [UserResponseDto],
+  })
+  async getInstitutionPeers(
+    @CurrentUser('sub') userId: string,
+  ): Promise<UserResponseDto[]> {
+    return this.orchestrator.getInstitutionPeers(userId);
+  }
+
   // ── GET /users/me ──────────────────────────────────────────────────────────
 
   @SkipThrottle()
   @Get('me')
-  @Header('Cache-Control', 'private, max-age=60')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Lihat profil saya',
@@ -169,7 +187,6 @@ export class UserController {
 
   @SkipThrottle()
   @Get(':id')
-  @Header('Cache-Control', 'private, max-age=60')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Lihat profil berdasarkan ID',
