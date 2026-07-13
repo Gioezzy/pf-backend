@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
   Delete,
+  Param,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -123,5 +124,23 @@ export class TeamsController {
   async leaveTeam(@Req() req: RequestWithUser): Promise<{ message: string }> {
     const sub = req.user.sub;
     return this.orchestrator.leaveTeam(sub);
+  }
+
+  @Delete('members/:memberId')
+  @Roles(UserRole.PARTICIPANT)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Mengeluarkan anggota dari tim (Hanya dapat diakses Ketua Tim)' })
+  @ApiOkResponse({
+    description: 'Anggota berhasil dikeluarkan dari tim.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bukan ketua tim, atau anggota tidak ditemukan.',
+  })
+  async removeMember(
+    @Req() req: RequestWithUser,
+    @Param('memberId') memberId: string,
+  ): Promise<TeamResponseDto> {
+    const sub = req.user.sub;
+    return this.orchestrator.removeMember(sub, memberId);
   }
 }

@@ -18,6 +18,7 @@ import { CreateTeamUseCase } from './applications/use-cases/create-team.use-case
 import { AddMemberUseCase } from './applications/use-cases/add-member.use-case';
 import { GetMyTeamUseCase } from './applications/use-cases/get-my-team.use-case';
 import { LeaveTeamUseCase } from './applications/use-cases/leave-team.use-case';
+import { RemoveMemberUseCase } from './applications/use-cases/remove-member.use-case';
 import { TeamsOrchestrator } from './applications/orchestrator/teams.orchestrator';
 
 // Controller
@@ -48,6 +49,7 @@ import { RegistrationsModule } from '../registrations/registrations.module';
     AddMemberUseCase,
     GetMyTeamUseCase,
     LeaveTeamUseCase,
+    RemoveMemberUseCase,
     // Orchestrator
     TeamsOrchestrator,
   ],
