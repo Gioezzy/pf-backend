@@ -15,9 +15,10 @@ import {
 import {
   CacheInterceptor,
   CacheTTL,
-  CacheKey, // 1. TAMBAHKAN IMPORT INI
+  CacheKey,
   CACHE_MANAGER,
 } from '@nestjs/cache-manager';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import type { Cache } from 'cache-manager';
 import {
   ApiOkResponse,
@@ -71,6 +72,7 @@ export class CompetitionsController {
 
   // --- ENDPOINT PUBLIK ---
 
+  @SkipThrottle()
   @Public()
   @Get()
   @UseInterceptors(CacheInterceptor) // 3. INTERCEPTOR HANYA ADA DI SINI
@@ -85,6 +87,7 @@ export class CompetitionsController {
     return this.orchestrator.getAll(false); // Mengirim false (hanya lomba aktif)
   }
 
+  @SkipThrottle()
   @Public()
   @Get(':id')
   @UseInterceptors(CacheInterceptor) // INTERCEPTOR HANYA ADA DI SINI
@@ -100,6 +103,7 @@ export class CompetitionsController {
 
   // --- ENDPOINT KHUSUS ADMIN (Tanpa Cache Sama Sekali) ---
 
+  @SkipThrottle()
   @Get('admin/list')
   @Roles(UserRole.ADMIN)
   @ApiOperation({
@@ -110,6 +114,7 @@ export class CompetitionsController {
     return this.orchestrator.getAll(true); // Mengirim true (tarik semua dari database)
   }
 
+  @Throttle({ dashboard: {} })
   @Post()
   @Roles(UserRole.ADMIN)
   @ApiOperation({
@@ -124,6 +129,7 @@ export class CompetitionsController {
     return result;
   }
 
+  @Throttle({ dashboard: {} })
   @Post('import')
   @Roles(UserRole.ADMIN)
   @ApiOperation({
@@ -140,6 +146,7 @@ export class CompetitionsController {
     return result;
   }
 
+  @Throttle({ dashboard: {} })
   @Patch(':id')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: '(ADMIN) Memperbarui data perlombaan' })
@@ -154,6 +161,7 @@ export class CompetitionsController {
     return result;
   }
 
+  @Throttle({ dashboard: {} })
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: '(ADMIN) Menonaktifkan lomba (Soft Delete)' })
@@ -166,6 +174,7 @@ export class CompetitionsController {
     return result;
   }
 
+  @Throttle({ dashboard: {} })
   @Patch('waves/:waveId')
   @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: '(ADMIN) Memperbarui harga atau jadwal gelombang' })

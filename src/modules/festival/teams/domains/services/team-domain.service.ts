@@ -16,7 +16,7 @@ export class TeamDomainService {
       );
     }
 
-    // 2. Validasi Instansi (100% Strict, tanpa any)
+    // 2. Validasi Instansi
     const memberInstitution = newMemberUser.institution;
 
     if (!memberInstitution) {

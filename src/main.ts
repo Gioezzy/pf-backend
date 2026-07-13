@@ -16,9 +16,7 @@ import { AppModule } from './app.module';
 
 dns.setDefaultResultOrder('ipv4first');
 
-// ===========================================================================
-// Type Guard Helper untuk menangkap Error CSRF tanpa menggunakan 'any'
-// ===========================================================================
+// Type Guard Helper untuk menangkap Error CSRF
 interface CsrfError extends Error {
   code: string;
 }
@@ -139,9 +137,7 @@ async function bootstrap(): Promise<void> {
   // Terapkan middleware CSRF untuk semua rute NestJS
   app.use(doubleCsrfProtection);
 
-  // ===========================================================================
-  // 7. CSRF Error Handler (Type-Safe, bebas any)
-  // ===========================================================================
+  // 7. CSRF Error Handler
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (isCsrfError(err)) {
       res.status(403).json({

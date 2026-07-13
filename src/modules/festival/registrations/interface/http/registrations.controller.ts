@@ -14,7 +14,9 @@ import {
   UploadedFile,
   UseFilters,
   UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import {
   ApiBearerAuth,
   ApiTags,
@@ -38,7 +40,7 @@ import { Roles } from 'src/modules/identity/auth/interface/decorators/roles.deco
 import { RolesGuard } from 'src/modules/identity/auth/interface/guards/roles.guard';
 import { UserRole } from 'src/modules/identity/users/domains/entities/user.entity';
 import { ChampionTitle } from '../../domains/entities/registration.entity';
-import { FileUploadInterceptor } from '../../../../shared/storage/interface/interceptors/file-upload.interceptor';
+import { RegistrationFileUploadInterceptor } from '../../../../shared/storage/interface/interceptors/file-upload.interceptor';
 import { FileSizeGuard } from '../../../../shared/storage/interface/guards/file-size.guard';
 import { StorageExceptionFilter } from '../../../../shared/storage/interface/filters/storage-exception.filter';
 
@@ -61,6 +63,7 @@ export interface RequestWithUser extends Request {
 export class RegistrationsController {
   constructor(private readonly orchestrator: RegistrationsOrchestrator) {}
 
+  @Throttle({ dashboard: {} })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Mendaftar ke sebuah lomba (Individu / Tim)' })
@@ -79,6 +82,7 @@ export class RegistrationsController {
     return this.orchestrator.register(activeUserId, dto);
   }
 
+  @SkipThrottle()
   @Get('my-registrations')
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.PARTICIPANT)
@@ -102,18 +106,19 @@ export class RegistrationsController {
 
   // ── Upload Bukti Pembayaran (Peserta) ────────────────────────────────────
 
+  @Throttle({ dashboard: {} })
   @Post(':id/payment-proof')
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.PARTICIPANT)
   @UseGuards(FileSizeGuard)
-  @UseInterceptors(FileUploadInterceptor)
+  @UseInterceptors(RegistrationFileUploadInterceptor)
   @UseFilters(StorageExceptionFilter)
   @ApiOperation({
-    summary: 'Unggah bukti pembayaran untuk sebuah pendaftaran',
+    summary: 'Unggah bukti pembayaran dan kartu tanda siswa',
     description:
-      'Peserta (atau ketua tim untuk lomba berkelompok) mengunggah bukti transfer. ' +
+      'Peserta (atau ketua tim untuk lomba berkelompok) mengunggah bukti transfer dan kartu identitas/pelajar. ' +
       'Status pendaftaran akan berubah menjadi PENDING_VERIFICATION dan menunggu approval bendahara.\n\n' +
-      '**Format yang didukung:** JPG, PNG, WebP, PDF. **Ukuran maksimum:** 20MB.\n\n' +
+      '**Format yang didukung:** JPG, PNG, WebP, PDF. **Ukuran maksimum:** 20MB per file.\n\n' +
       'Hanya bisa diunggah selagi status PENDING_PAYMENT, atau diunggah ulang jika sebelumnya REJECTED.',
     operationId: 'registrationsUploadPaymentProof',
   })
@@ -121,12 +126,17 @@ export class RegistrationsController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['file'],
+      required: ['file', 'identityCardFile'],
       properties: {
         file: {
           type: 'string',
           format: 'binary',
           description: 'File bukti pembayaran (JPG/PNG/WebP/PDF, maks 20MB)',
+        },
+        identityCardFile: {
+          type: 'string',
+          format: 'binary',
+          description: 'File kartu identitas/tanda siswa (JPG/PNG/WebP/PDF, maks 20MB)',
         },
       },
     },
@@ -134,7 +144,7 @@ export class RegistrationsController {
   @ApiOkResponse({
     type: RegistrationResponseDto,
     description:
-      'Bukti pembayaran berhasil diunggah, menunggu verifikasi bendahara.',
+      'Bukti pembayaran dan identitas berhasil diunggah, menunggu verifikasi bendahara.',
   })
   @ApiForbiddenResponse({
     description: 'Anda bukan pemilik pendaftaran ini (atau bukan ketua tim).',
@@ -149,7 +159,10 @@ export class RegistrationsController {
   })
   uploadPaymentProof(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-    @UploadedFile() file: Express.Multer.File | undefined,
+    @UploadedFiles() files: {
+      file?: Express.Multer.File[];
+      identityCardFile?: Express.Multer.File[];
+    },
     @Req() req: RequestWithUser,
   ): Promise<RegistrationResponseDto> {
     const activeUserId = req.user.id || req.user.sub || req.user.userId;
@@ -158,11 +171,14 @@ export class RegistrationsController {
         'Gagal memverifikasi identitas. Format token tidak dikenali.',
       );
     }
-    return this.orchestrator.uploadPaymentProof(id, activeUserId, file);
+    const paymentFile = files?.file?.[0];
+    const identityCardFiles = files?.identityCardFile || [];
+    return this.orchestrator.uploadPaymentProof(id, activeUserId, paymentFile, identityCardFiles);
   }
 
   // ── Verifikasi Bukti Pembayaran (Bendahara) ──────────────────────────────
 
+  @SkipThrottle()
   @Get('bendahara/pending-verification')
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.TREASURER)
@@ -178,6 +194,7 @@ export class RegistrationsController {
     return this.orchestrator.getPendingVerifications();
   }
 
+  @Throttle({ dashboard: {} })
   @Patch('bendahara/:id/verify')
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.TREASURER, UserRole.ADMIN)
@@ -205,6 +222,7 @@ export class RegistrationsController {
     return this.orchestrator.verifyPayment(id, bendaharaUserId, dto);
   }
 
+  @SkipThrottle()
   @Get('admin/competition/:competitionId/verified')
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.ADMIN, UserRole.COMMITTEE, UserRole.TREASURER) // Proteksi admin
@@ -222,6 +240,7 @@ export class RegistrationsController {
     );
   }
 
+  @Throttle({ dashboard: {} })
   @Patch('admin/:id/set-champion')
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.ADMIN) // Proteksi admin

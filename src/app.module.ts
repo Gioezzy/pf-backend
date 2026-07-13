@@ -1,9 +1,10 @@
-// src/app.module.ts
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, type TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import {
   ThrottlerModule,
+  ThrottlerGuard,
   type ThrottlerModuleOptions,
 } from '@nestjs/throttler';
 import { EventEmitterModule } from '@nestjs/event-emitter';
@@ -21,14 +22,16 @@ import { TeamsModule } from './modules/festival/teams/teams.module';
 import { RegistrationsModule } from './modules/festival/registrations/registrations.module';
 import { SubmissionsModule } from './modules/festival/submissions/submissions.module';
 import { NotificationsModule } from './modules/shared/notifications/notifications.module';
+import { GlobalExceptionFilter } from './modules/shared/common/filters/global-exception.filter';
+import { LoggingMiddleware } from './modules/shared/common/middlewares/logging.middleware';
 
 @Module({
   imports: [
     // 1. Konfigurasi Environment (Global)
     ConfigModule.forRoot({
       isGlobal: true,
-      validate, // Menggunakan env.validation.ts yang sudah kita buat
-      envFilePath: '.env.development.local', // Bisa diganti sesuai environment
+      validate,
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env' : '.env.development.local',
     }),
 
     // 2. Konfigurasi Database (TypeORM - MySQL)
@@ -45,8 +48,7 @@ import { NotificationsModule } from './modules/shared/notifications/notification
           username: configService.get<string>('DB_USERNAME'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_DATABASE'),
-          autoLoadEntities: true, // Otomatis memuat entitas yang terdaftar di forFeature()
-          // Matikan synchronize di production untuk mencegah hilangnya data!
+          autoLoadEntities: true,
           synchronize: !isProduction,
           extra: {
             connectionLimit: configService.get<number>('DB_CONNECTION_LIMIT'),
@@ -62,14 +64,23 @@ import { NotificationsModule } from './modules/shared/notifications/notification
       useFactory: (configService: ConfigService): ThrottlerModuleOptions => ({
         throttlers: [
           {
+            // Default: fallback untuk semua endpoint yang tidak spesifik
             name: 'default',
             ttl: configService.get<number>('THROTTLE_TTL_DEFAULT', 60000),
-            limit: configService.get<number>('THROTTLE_LIMIT_DEFAULT', 100),
+            limit: configService.get<number>('THROTTLE_LIMIT_DEFAULT', 1000),
           },
           {
+            // Strict: untuk endpoint sensitif (login, register, OTP)
             name: 'strict',
             ttl: configService.get<number>('THROTTLE_TTL_STRICT', 60000),
-            limit: configService.get<number>('THROTTLE_LIMIT_STRICT', 10),
+            limit: configService.get<number>('THROTTLE_LIMIT_STRICT', 50),
+          },
+          {
+            // Dashboard: untuk aksi mutasi di area dashboard oleh user terautentikasi
+            // Sangat longgar — 500 request per menit per IP
+            name: 'dashboard',
+            ttl: configService.get<number>('THROTTLE_TTL_DASHBOARD', 60000),
+            limit: configService.get<number>('THROTTLE_LIMIT_DASHBOARD', 500),
           },
         ],
       }),
@@ -98,6 +109,19 @@ import { NotificationsModule } from './modules/shared/notifications/notification
     NotificationsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggingMiddleware).forRoutes('*');
+  }
+}

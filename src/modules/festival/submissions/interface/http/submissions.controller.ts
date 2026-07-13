@@ -12,6 +12,7 @@ import {
   ParseUUIDPipe,
   Delete,
 } from '@nestjs/common';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { CurrentUser } from '../../../../identity/auth/interface/decorators/current-user.decorator';
 import {
   ApiBearerAuth,
@@ -36,6 +37,7 @@ export class SubmissionsController {
   constructor(private readonly orchestrator: SubmissionsOrchestrator) {}
 
   // --- AREA PESERTA ---
+  @Throttle({ dashboard: {} })
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @Roles(UserRole.PARTICIPANT)
@@ -66,6 +68,7 @@ export class SubmissionsController {
     );
   }
 
+  @SkipThrottle()
   @Get('my-submission/:registrationId')
   @Roles(UserRole.PARTICIPANT)
   @ApiOperation({ summary: 'Melihat karya lomba sendiri' })
@@ -75,6 +78,7 @@ export class SubmissionsController {
     return this.orchestrator.getMySubmission(registrationId);
   }
 
+  @Throttle({ dashboard: {} })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Roles(UserRole.PARTICIPANT)
@@ -89,6 +93,7 @@ export class SubmissionsController {
   }
 
   // --- AREA PANITIA / JURI ---
+  @SkipThrottle()
   @Get('competition/:competitionId')
   @Roles(UserRole.ADMIN, UserRole.COMMITTEE)
   @ApiOperation({

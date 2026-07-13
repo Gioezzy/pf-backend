@@ -50,7 +50,7 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  @Throttle({ strict: { limit: 5, ttl: 60_000 } })
+  @Throttle({ strict: { limit: 100, ttl: 60_000 } })
   @ApiOperation({
     summary: 'Daftar akun baru',
     description:
@@ -102,7 +102,7 @@ export class AuthController {
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ strict: { limit: 5, ttl: 60_000 } })
+  @Throttle({ strict: { limit: 100, ttl: 60_000 } })
   @ApiOperation({
     summary: 'Login',
     description:
@@ -143,7 +143,7 @@ export class AuthController {
     res.cookie('accessToken', result.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
       domain:
         process.env.NODE_ENV === 'production'
@@ -215,7 +215,7 @@ export class AuthController {
     res.cookie('accessToken', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/',
       domain:
         process.env.NODE_ENV === 'production'
@@ -230,7 +230,7 @@ export class AuthController {
   @Public()
   @Post('verify-email')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ strict: { limit: 5, ttl: 60_000 } }) // 🚨 FIX: Mencegah Brute-Force OTP
+  @Throttle({ strict: { limit: 100, ttl: 60_000 } }) // 🚨 FIX: Mengizinkan login massal dari sekolah
   @ApiOperation({
     summary: 'Verifikasi email pengguna',
     description:
@@ -263,7 +263,7 @@ export class AuthController {
   @Public()
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ strict: { limit: 3, ttl: 60_000 } })
+  @Throttle({ strict: { limit: 100, ttl: 60_000 } })
   @ApiOperation({
     summary: 'Kirim OTP Lupa Password',
     description: 'Mengirimkan kode OTP ke email pengguna untuk reset password.',
@@ -280,7 +280,7 @@ export class AuthController {
   @Public()
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ strict: { limit: 3, ttl: 60_000 } })
+  @Throttle({ strict: { limit: 100, ttl: 60_000 } })
   @ApiOperation({
     summary: 'Reset Password',
     description: 'Mereset password menggunakan OTP yang dikirim ke email.',
