@@ -99,9 +99,7 @@ async function bootstrap(): Promise<void> {
   // 5. Cookie Parser (WAJIB sebelum middleware CSRF)
   app.use(cookieParser(configService.get<string>('COOKIE_SECRET')));
 
-  // ===========================================================================
   // 6. Setup CSRF Protection (Double Submit Cookie)
-  // ===========================================================================
   const { doubleCsrfProtection, generateCsrfToken } = doubleCsrf({
     getSecret: () =>
       configService.get<string>('CSRF_SECRET') ??
