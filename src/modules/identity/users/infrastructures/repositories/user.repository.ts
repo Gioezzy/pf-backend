@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
 import { UserEntity } from '../../domains/entities/user.entity';
-import { IUserRepository } from './user.repository.interface';
+import { IUserRepository, type FindAllUsersQuery, type PaginatedResult } from './user.repository.interface';
 import { UserRole } from '../../../users/domains/entities/user.entity';
 
 @Injectable()
@@ -35,6 +35,39 @@ export class UserRepository implements IUserRepository {
 
   async findAll(): Promise<UserEntity[]> {
     return this.ormRepo.find({ where: { isActive: true } });
+  }
+
+  async findAllPaginated(query: FindAllUsersQuery): Promise<PaginatedResult<UserEntity>> {
+    const { page = 1, limit = 10, role, search } = query;
+    const skip = (page - 1) * limit;
+
+    const qb = this.ormRepo.createQueryBuilder('user').where('1=1');
+
+    if (search) {
+      qb.andWhere(
+        '(user.fullName ILIKE :search OR user.email ILIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (role) {
+      qb.andWhere('user.role = :role', { role });
+    }
+
+    const [data, total] = await qb
+      .orderBy('user.role', 'ASC')
+      .addOrderBy('user.fullName', 'ASC')
+      .skip(skip)
+      .take(limit)
+      .getManyAndCount();
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async create(data: Partial<UserEntity>): Promise<UserEntity> {

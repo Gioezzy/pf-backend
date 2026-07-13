@@ -11,6 +11,7 @@ import { AdminCreateUserUseCase } from '../use-cases/admin-create-comitte-user.u
 import { FindAllUsersUseCase } from '../use-cases/find-all-users.use-case';
 import { SearchParticipantsUseCase } from '../use-cases/search-participants.use-case';
 import { AdminCreateUserDto } from '../dto/admin-create-user.dto';
+import { type FindAllUsersQuery, type PaginatedResult } from '../../infrastructures/repositories/user.repository.interface';
 
 @Injectable()
 export class UserOrchestrator {
@@ -51,8 +52,8 @@ export class UserOrchestrator {
     return this.adminCreateUserUc.execute(dto);
   }
 
-  findAll(): Promise<UserResponseDto[]> {
-    return this.findAllUsersUc.execute();
+  findAll(query: FindAllUsersQuery = {}): Promise<PaginatedResult<UserResponseDto>> {
+    return this.findAllUsersUc.execute(query);
   }
 
   searchParticipants(query: string): Promise<UserResponseDto[]> {

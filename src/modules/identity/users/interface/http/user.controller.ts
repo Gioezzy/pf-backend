@@ -15,6 +15,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
@@ -22,6 +23,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
@@ -31,6 +33,7 @@ import { UserOrchestrator } from '../../applications/orchestrator/user.orchestra
 import { UpdateUserDto } from '../../applications/dto/update-user.dto';
 import { UpdateAvatarDto } from '../../applications/dto/update-avatar.dto';
 import { UserResponseDto } from '../../applications/dto/user-response.dto';
+import { PaginatedUsersResponseDto } from '../../applications/dto/paginated-users-response.dto';
 import { UserExceptionFilter } from '../filters/user-exception.filter';
 import { JwtAuthGuard } from '../../../auth/interface/guards/jwt-auth.guard';
 import { CurrentUser } from '../../../auth/interface/decorators/current-user.decorator';
@@ -49,6 +52,7 @@ import { Roles } from 'src/modules/identity/auth/interface/decorators/roles.deco
 export class UserController {
   constructor(private readonly orchestrator: UserOrchestrator) {}
 
+  @Throttle({ dashboard: {} })
   @Post('admin/create')
   @HttpCode(HttpStatus.CREATED)
   @Roles(UserRole.ADMIN)
@@ -69,18 +73,34 @@ export class UserController {
     return this.orchestrator.adminCreateUser(dto);
   }
 
+  @SkipThrottle()
   @Get()
   @HttpCode(HttpStatus.OK)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: '(ADMIN) Mendapatkan daftar seluruh user' })
+  @ApiOperation({ summary: '(ADMIN) Mendapatkan daftar seluruh user dengan pagination' })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'role', required: false, type: String, example: 'ADMIN' })
+  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiOkResponse({
     description: 'Berhasil mendapatkan daftar user',
-    type: [UserResponseDto],
+    type: PaginatedUsersResponseDto,
   })
-  async findAll(): Promise<UserResponseDto[]> {
-    return this.orchestrator.findAll();
+  async findAll(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('role') role?: string,
+    @Query('search') search?: string,
+  ): Promise<PaginatedUsersResponseDto> {
+    return this.orchestrator.findAll({
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? Math.min(parseInt(limit, 10), 50) : 10,
+      role: role || undefined,
+      search: search || undefined,
+    });
   }
 
+  @SkipThrottle()
   @Get('search')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -98,6 +118,7 @@ export class UserController {
 
   // ── GET /users/me ──────────────────────────────────────────────────────────
 
+  @SkipThrottle()
   @Get('me')
   @Header('Cache-Control', 'private, max-age=60')
   @HttpCode(HttpStatus.OK)
@@ -146,6 +167,7 @@ export class UserController {
 
   // ── GET /users/:id ─────────────────────────────────────────────────────────
 
+  @SkipThrottle()
   @Get(':id')
   @Header('Cache-Control', 'private, max-age=60')
   @HttpCode(HttpStatus.OK)
