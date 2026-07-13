@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TeamEntity } from '../entities/team.entity';
+import { RegistrationStatus } from '../../../registrations/domains/entities/registration.entity';
 import {
   TeamResponseDto,
   TeamMemberDto,
@@ -19,8 +20,8 @@ export class TeamMapper {
     dto.name = entity.name;
     dto.institution = entity.institution;
     dto.createdAt = entity.createdAt;
-    dto.isRegistered = Array.isArray(entity.registrations) && entity.registrations.length > 0;
-
+    dto.isRegistered = Array.isArray(entity.registrations) && 
+      entity.registrations.some(r => r.status === RegistrationStatus.VERIFIED);
       if (entity.leader) {
       dto.leader = {
         id: entity.leader.id,
