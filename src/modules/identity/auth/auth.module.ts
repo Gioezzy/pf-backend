@@ -23,6 +23,7 @@ import { LogoutService } from './applications/use-cases/logout.use-case';
 import { VerifyEmailUseCase } from './applications/use-cases/verify-email.use-case';
 import { ForgotPasswordUseCase } from './applications/use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from './applications/use-cases/reset-password.use-case';
+import { ResendOtpUseCase } from './applications/use-cases/resend-otp.use-case';
 
 // Orchestrator
 import { AuthOrchestrator } from './applications/orchestrator/auth.orchestrator';
@@ -74,6 +75,7 @@ import { UserLoggedInListener } from './infrastructures/listeners/user-logged-in
     VerifyEmailUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
+    ResendOtpUseCase,
   ],
   exports: [JwtAuthGuard, JwtModule, TokenService],
 })

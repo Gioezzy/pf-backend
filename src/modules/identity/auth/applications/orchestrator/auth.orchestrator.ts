@@ -12,6 +12,8 @@ import { ForgotPasswordUseCase } from '../use-cases/forgot-password.use-case';
 import { ResetPasswordUseCase } from '../use-cases/reset-password.use-case';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { ResendOtpUseCase } from '../use-cases/resend-otp.use-case';
+import { ResendOtpDto } from '../dto/resend-otp.dto';
 
 @Injectable()
 export class AuthOrchestrator {
@@ -22,6 +24,7 @@ export class AuthOrchestrator {
     private readonly verifyEmailUseCase: VerifyEmailUseCase,
     private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly resendOtpUseCase: ResendOtpUseCase,
   ) {}
 
   async login(dto: LoginDto): Promise<AuthResponseDto> {
@@ -60,5 +63,9 @@ export class AuthOrchestrator {
       dto.otp,
       dto.newPassword,
     );
+  }
+
+  async resendOtp(dto: ResendOtpDto): Promise<{ message: string }> {
+    return this.resendOtpUseCase.execute(dto.email);
   }
 }

@@ -31,6 +31,7 @@ import { AuthResponseDto } from '../../applications/dto/auth-response.dto';
 import { VerifyEmailDto } from '../../applications/dto/verify-email.dto';
 import { ForgotPasswordDto } from '../../applications/dto/forgot-password.dto';
 import { ResetPasswordDto } from '../../applications/dto/reset-password.dto';
+import { ResendOtpDto } from '../../applications/dto/resend-otp.dto';
 import { AuthExceptionFilter } from '../filters/auth-exception.filter';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { Public } from '../decorators/public.decorator';
@@ -212,17 +213,20 @@ export class AuthController {
     await this.orchestrator.logout(user.sub);
 
     // 2. Hapus cookie di browser klien
-    res.cookie('accessToken', '', {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? ('none' as const) : ('lax' as const),
       path: '/',
       domain:
         process.env.NODE_ENV === 'production'
           ? '.physicsfest.my.id'
           : undefined,
       maxAge: 0, // maxAge 0 akan menghancurkan cookie
-    });
+    };
+
+    res.cookie('accessToken', '', cookieOptions);
+    res.cookie('x-csrf-token', '', cookieOptions);
 
     return { message: 'Logout berhasil' };
   }
@@ -294,5 +298,22 @@ export class AuthController {
     @Body() dto: ResetPasswordDto,
   ): Promise<{ message: string }> {
     return this.orchestrator.resetPassword(dto);
+  }
+
+  @Public()
+  @Post('resend-otp')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ strict: { limit: 100, ttl: 60_000 } })
+  @ApiOperation({
+    summary: 'Resend OTP',
+    description: 'Kirim ulang OTP pendaftaran.',
+    operationId: 'authResendOtp',
+  })
+  @ApiOkResponse({ description: 'OTP berhasil dikirim ulang.' })
+  @ApiBadRequestResponse({
+    description: 'Email tidak ditemukan atau sudah diverifikasi.',
+  })
+  async resendOtp(@Body() dto: ResendOtpDto): Promise<{ message: string }> {
+    return this.orchestrator.resendOtp(dto);
   }
 }
