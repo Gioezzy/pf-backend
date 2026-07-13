@@ -50,16 +50,19 @@ export class MailService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    try {
-      await this.transporter.verify();
-      this.logger.log('✅ SMTP connection berhasil.');
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        this.logger.error(`SMTP Verify Error: ${err.message}`, err.stack);
-      } else {
-        this.logger.error('SMTP Verify Error', String(err));
-      }
-    }
+    // Jalankan verifikasi di background agar tidak memblokir startup (terutama di Hostinger)
+    this.transporter
+      .verify()
+      .then(() => {
+        this.logger.log('✅ SMTP connection berhasil.');
+      })
+      .catch((err: unknown) => {
+        if (err instanceof Error) {
+          this.logger.error(`SMTP Verify Error: ${err.message}`, err.stack);
+        } else {
+          this.logger.error('SMTP Verify Error', String(err));
+        }
+      });
   }
 
   async sendOtpEmail(to: string, name: string, otp: string): Promise<void> {
