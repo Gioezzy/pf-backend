@@ -34,9 +34,6 @@ import { UserController } from './interface/http/user.controller';
 // Events & Listeners
 import { UserCreatedListener } from './infrastructures/listeners/user-created.listener';
 
-// ── Seeder ────────────────────────────────────────────────────
-import { AdminSeederService } from './infrastructures/seeders/admin-seeder.service';
-
 const USE_CASES = [
   CreateUserUseCase,
   FindUserByIdUseCase,
@@ -70,9 +67,6 @@ const USE_CASES = [
 
     // ── Event Listeners ────────────────────────────────────────
     UserCreatedListener,
-
-    // ── Seeders ────────────────────────────────────────
-    AdminSeederService,
   ],
   exports: [
     USER_REPOSITORY_TOKEN,
